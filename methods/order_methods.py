@@ -8,12 +8,12 @@ from data import ORDER_URL, BASE_URL
 class OrderMethods:
 
     @step('Создаем ордер')
-    def create_order(self, params):
-        response = requests.post(f'{BASE_URL}{ORDER_URL}', json=params)
-        return response.status_code, loads(response.text)
+    def create_order(self, params, token):
+        response = requests.post(f'{BASE_URL}{ORDER_URL}', json=params, headers={'Authorization': f'{token}'})
+        return response.status_code, response.text
 
 
-    @step('Получаеи список ордеров')
-    def get_list_user_orders(self):
-        response = requests.get(f'{BASE_URL}{ORDER_URL}')
+    @step('Получаем список ордеров по юзеру')
+    def get_list_user_orders(self,token):
+        response = requests.get(f'{BASE_URL}{ORDER_URL}', headers={'Authorization': f'{token}'})
         return response.status_code, loads(response.text)
