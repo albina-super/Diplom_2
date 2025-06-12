@@ -1,5 +1,14 @@
 import random
 import string
+from jsonschema import validate, ValidationError
+
+def is_valid_json(instance: dict, schema: dict) -> bool:
+    try:
+        validate(instance=instance, schema=schema)
+        return True
+    except ValidationError:
+        return False
+
 
 def generate_random_email():
     username = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))

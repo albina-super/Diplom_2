@@ -2,7 +2,9 @@ from json import loads
 import allure
 from data import BAD_REQUEST_STATUS, INVALID_HASH_INGREDIENTS_DATA, SERVER_ERROR_STATUS, UNAUTHORIZED_STATUS, \
     SUCCESS_STATUS
+from helpers import is_valid_json
 from methods.order_methods import OrderMethods
+from orders_json_schemas import order_schema_unauthenticated, order_schema_authenticated
 
 
 class TestOrderMethods:
@@ -11,14 +13,19 @@ class TestOrderMethods:
     def test_create_order_with_authorization(self, ingredients, user_login):
         order = OrderMethods()
         code, response = order.create_order({'ingredients': ingredients}, user_login)
-        assert code == SUCCESS_STATUS and loads(response)['success'] == True
+        dict_response = loads(response)
+        assert (code == SUCCESS_STATUS and dict_response['success'] == True
+                and is_valid_json(instance=dict_response, schema=order_schema_authenticated))
+
 
 
     @allure.title('Тесты на создание ордера без авторизации')
     def test_create_order_without_authorization(self, ingredients):
         order = OrderMethods()
         code, response = order.create_order({'ingredients': ingredients}, token='')
-        assert code == SUCCESS_STATUS and loads(response)['success'] == True
+        dict_response = loads(response)
+        assert (code == SUCCESS_STATUS and dict_response['success'] == True
+                and is_valid_json(instance=dict_response, schema=order_schema_unauthenticated))
 
 
     @allure.title('Тесты на создание ордера без ингредиентов')
